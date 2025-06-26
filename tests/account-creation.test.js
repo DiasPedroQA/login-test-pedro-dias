@@ -5,31 +5,45 @@ const { test, expect } = require('@playwright/test');
 const { SignupPage } = require('../pages/SignupPage');
 const { gerarInbox, esperarEmail } = require('../utils/mailslurp');
 
-test('fluxo completo de criação de conta com 2FA via MailSlurp', async ({ page }) => {
-    // Crio uma inbox temporária com MailSlurp
+test('fluxo completo de cadastro com 2FA via MailSlurp', async ({ page }) => {
+    // 1. Cria uma inbox temporária
     const inbox = await gerarInbox();
     console.log(`📧 E-mail gerado: ${inbox.emailAddress}`);
 
-    // Instancio o Page Object da tela de cadastro
+    // 2. Instancia o Page Object
     const signup = new SignupPage(page);
 
-    // Acesso a página inicial
+    // 3. Acessa a página inicial
     await signup.acessar();
 
-    // Etapa 1: Preencher o e-mail e clicar em "Sign In"
-    await signup.preencherEmail(inbox.emailAddress);
-    console.log('E-mail preenchido e botão "Sign In" clicado');
+    // 4. Inicia o fluxo de cadastro
+    await signup.clicarNoLinkCadastro();
 
-    // Etapa 2: Preencher o código de acesso e clicar em "Continue"
-    await signup.preencherAccessCode();
+    // 5. Preenche o código de convite
+    await signup.preencherCodigoConvite('SKILL5-BETA-ACCESS');
 
-    // Aguardo o código 2FA chegar por e-mail
+    // 6. Preenche o formulário de cadastro
+    await signup.preencherFormularioCadastro({
+        nome: 'Pedro Dias',
+        email: inbox.emailAddress,
+        empresa: 'Empresa Teste',
+        cargo: 'Desenvolvedor'
+    });
+
+    // 7. Submete o cadastro
+    await signup.submeterCadastro();
+
+    // 8. Aguarda o código 2FA chegar por e-mail
     const codigo = await esperarEmail(inbox.id);
     console.log(`🔐 Código 2FA recebido: ${codigo}`);
 
-    // Etapa 3: Preencher o código 2FA e finalizar
+    // 9. Preenche o código 2FA
     await signup.preencher2FA(codigo);
 
-    // Validação final: verifica se a página de sucesso foi carregada (ajuste conforme necessário)
-    await expect(page.locator('text=Dashboard')).toBeVisible();
+    // 10. (Opcional para debug) Pausa para inspeção manual
+    // console.log('⏸️ Pausando para inspeção manual. Pressione qualquer tecla para continuar...');
+    // await page.pause();
+
+    // 11. Validação final: verifica se o dashboard abriu corretamente
+    await expect(page.locator('p:text-is("DASHBOARD")')).toBeVisible({ timeout: 180000 });
 });

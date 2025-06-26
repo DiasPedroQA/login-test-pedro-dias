@@ -13,11 +13,17 @@ async function gerarInbox() {
 }
 
 /**
- * Aguarda o e-mail chegar e extrai automaticamente o código 2FA (6 dígitos).
+ * Aguarda o e-mail mais recente chegar e extrai automaticamente o código 2FA (6 dígitos).
  */
 async function esperarEmail(inboxId) {
-    const email = await mailslurp.waitForLatestEmail(inboxId, 60000); // espera até 30s
-    const codigo = email.body.match(/\d{6}/)?.[0]; // extrai o código 2FA via regex
+    const email = await mailslurp.waitForLatestEmail(inboxId, 60000, true); // true = only unread
+    console.log(`[MailSlurp] E-mail recebido: assunto="${email.subject}"`);
+    // Extrai o código 2FA apenas da div correta
+    const match = email.body.match(/<div class="verification-code">\s*([0-9]{6})\s*<\/div>/i);
+    const codigo = match ? match[1] : null;
+    if (!codigo) {
+        throw new Error('Não foi possível extrair o código 2FA do e-mail mais recente!');
+    }
     return codigo;
 }
 
