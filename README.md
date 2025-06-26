@@ -1,83 +1,82 @@
-````markdown
-# 💻 Desafio QA Automatizador — login-test-pedro-dias
+# Desafio Skill5 - Testes Automatizados com Playwright e MailSlurp
 
-Este projeto é a minha solução para o desafio técnico de QA Automatizador proposto pela Skill5, cujo objetivo era automatizar todo o fluxo de criação de conta com autenticação 2FA (do tipo email-code) utilizando Playwright e a API do MailSlurp.
+Este projeto automatiza o fluxo de cadastro de usuário na plataforma Skill5, incluindo validação de código 2FA recebido por e-mail temporário (MailSlurp), usando Playwright.
 
-## ✅ Objetivo do desafio
+## Pré-requisitos
 
-Automatizar de forma **100% automatizada** o seguinte fluxo:
+- Node.js 20+
+- Conta no [MailSlurp](https://mailslurp.com/) para geração de e-mails temporários
+- Chave de API do MailSlurp
 
-1. Acessar a aplicação: [https://beta.skill5.com/pt](https://beta.skill5.com/pt)
-2. Gerar um e-mail temporário com a API do MailSlurp
-3. Iniciar o processo de criação de conta com esse e-mail
-4. Informar o código de acesso: `SKILL5-BETA-ACCESS`
-5. Aguardar o recebimento do e-mail com o código de verificação (2FA)
-6. Capturar esse código via API e concluir o cadastro
-7. Validar que o login foi realizado com sucesso (ex: dashboard visível)
-
----
-
-## 🧠 Minhas escolhas técnicas
-
-### 🧪 Playwright
-
-Escolhi o Playwright pela sua robustez, suporte nativo a múltiplos browsers e pela facilidade de escrita de testes end-to-end confiáveis. Estou utilizando **JavaScript** puro, sem transpilers ou complicações, para manter o projeto simples e direto.
-
-### 📧 MailSlurp
-
-Para lidar com a verificação por e-mail, utilizei o `mailslurp-client`, que permite criar inboxes temporárias e acessar mensagens via API com segurança e dinamismo. Assim, consigo manter meus testes **idempotentes**, ou seja, podem ser executados várias vezes sem colisão de dados.
-
-### ♻️ Page Object Model (POM)
-
-Implementei a automação com o padrão **Page Object Model**, separando a lógica de páginas (`pages/`) da lógica de testes (`tests/`). Isso melhora a organização, facilita a manutenção e permite reutilizar ações comuns entre testes futuros.
-
----
-
-## 🛠️ Instalação e execução
-
-### 1. Clonar o repositório
-```bash
-git clone https://github.com/DiasPedroQA/login-test-pedro-dias.git
-cd login-test-pedro-dias
-````
-
-### 2. Instalar as dependências
+## Instalação
 
 ```bash
-npm install
+npm ci
 ```
 
-### 3. Configurar variáveis de ambiente
+## Configuração
 
-Crie um arquivo `.env` na raiz com a sua API Key do MailSlurp:
+Crie um arquivo `.env` na raiz do projeto com sua chave do MailSlurp:
 
-```env
-MAILSLURP_API_KEY=sua-chave-aqui
+```bash
+MAILSLURP_API_KEY=seu_token_aqui
 ```
 
-Use o arquivo `.env.example` como referência.
+## Estrutura dos Arquivos
 
-### 4. Executar os testes
+- `pages/SignupPage.js`: Page Object Model para a tela de cadastro.
+- `utils/mailslurp.js`: Funções utilitárias para criar inbox e extrair o código 2FA do e-mail.
+- `tests/account-creation.test.js`: Teste E2E cobrindo todo o fluxo de cadastro com 2FA.
+- `.github/workflows/playwright.yml`: Pipeline GitHub Actions para rodar os testes automaticamente.
+
+## Rodando os Testes Localmente
 
 ```bash
 npx playwright test
 ```
 
+Para depuração visual (modo headed):
+
+```bash
+npx playwright test --headed
+```
+
+## Pipeline CI (GitHub Actions)
+
+O workflow `.github/workflows/playwright.yml` executa os testes automaticamente a cada push ou pull request na branch `main`.
+
+**Importante:**  
+Adicione o segredo `MAILSLURP_API_KEY` nas configurações do repositório no GitHub (`Settings > Secrets and variables > Actions > New repository secret`).
+
+Exemplo de trecho para usar o segredo no workflow:
+
+```yaml
+env:
+  MAILSLURP_API_KEY: ${{ secrets.MAILSLURP_API_KEY }}
+```
+
+## Fluxo Automatizado
+
+1. Cria uma inbox temporária no MailSlurp.
+2. Acessa a página inicial e inicia o cadastro.
+3. Preenche o formulário, submete e aguarda o e-mail com o código 2FA.
+4. Extrai o código 2FA do HTML do e-mail (apenas da `<div class="verification-code">`).
+5. Preenche o código 2FA no formulário.
+6. Valida se o dashboard foi aberto corretamente.
+
+## Dicas de Debug
+
+- Prints e screenshots são gerados automaticamente em caso de erro.
+- Para pausar o teste e inspecionar a tela, descomente `await page.pause();` no teste.
+
+## Personalização
+
+- Ajuste os seletores no `SignupPage.js` caso o front-end mude.
+- Para maior robustez, peça ao time de front-end para adicionar `data-testid` nos elementos críticos.
+
 ---
 
-## 📁 Estrutura do projeto
-
-```
-login-test-pedro-dias/
-├── tests/          # Scripts de teste automatizado
-├── pages/          # Page Objects com ações das telas
-├── utils/          # Funções auxiliares (ex: MailSlurp)
-├── .env.example    # Exemplo de variáveis de ambiente
-├── .gitignore
-├── package.json
-├── playwright.config.js
-└── README.md
-```
+**Qualquer dúvida ou sugestão, abra uma issue ou pull request!**
 
 ---
 
@@ -94,12 +93,3 @@ Este repositório foi desenvolvido para ser enviado como solução até a data l
 ---
 
 Desenvolvido por **Pedro Dias**
-
-```
-
----
-
-Se quiser, posso adaptar esse conteúdo para Markdown já formatado e salvar como arquivo local, pronto para ser commitado.
-
-Deseja que eu gere esse `README.md` agora no seu projeto com esse conteúdo ou deseja revisar algum trecho antes?
-```

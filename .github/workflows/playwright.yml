@@ -9,6 +9,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      MAILSLURP_API_KEY: ${{ secrets.MAILSLURP_API_KEY }}
 
     steps:
       - name: Checkout código
