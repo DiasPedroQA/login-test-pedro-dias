@@ -1,0 +1,29 @@
+{
+  "name": "login-test-pedro-dias",
+  "version": "1.0.0",
+  "description": "Desafio técnico de QA Automatizador com Playwright e MailSlurp",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DiasPedroQA/login-test-pedro-dias.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DiasPedroQA/login-test-pedro-dias/issues"
+  },
+  "homepage": "https://github.com/DiasPedroQA/login-test-pedro-dias#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.53.1",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.0.4",
+    "dotenv": "^16.5.0"
+  },
+  "dependencies": {
+    "mailslurp-client": "^15.24.1"
+  }
+}
