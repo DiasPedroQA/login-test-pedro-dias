@@ -40,10 +40,6 @@ test('fluxo completo de cadastro com 2FA via MailSlurp', async ({ page }) => {
     // 9. Preenche o código 2FA
     await signup.preencher2FA(codigo);
 
-    // 10. (Opcional para debug) Pausa para inspeção manual
-    // console.log('⏸️ Pausando para inspeção manual. Pressione qualquer tecla para continuar...');
-    // await page.pause();
-
-    // 11. Validação final: verifica se o dashboard abriu corretamente
+    // 10. Validação final: verifica se o dashboard abriu corretamente
     await expect(page.locator('p:text-is("DASHBOARD")')).toBeVisible({ timeout: 180000 });
 });
